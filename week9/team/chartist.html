@@ -48,10 +48,14 @@ var items   // global scope (i.e., can be accessed in javascript console)
 
 function solution1(){
     // TODO: replace the hard coded values in series by actual computation
+    var groups = _.groupBy(items, 'CrsPBADept')
+    var counts = _.mapValues(groups, function(g) {
+      return g.length
+    })
     var data = {
-          labels: ['HIST', 'HONR', 'HUMN', 'IAFS', 'IPHY'],
+          labels: _.take(_.keys(counts), 5),
           series: [
-            [121,23,42,56,12]
+            _.take(_.values(counts), 5)
           ]
     }
     new Chartist.Bar('#q1 .answer', data);
@@ -75,18 +79,67 @@ function solution2(){
 
 
 function solution3(){
+  var counts = _.chain(items)
+                .groupBy('CrsPBADept')
+                .mapValues(function(g){
+                  return g.length
+                }).pairs()
+                .filter(function(arr){
+                  return arr[1] >= 100;
+                }).value();
+
+  var data = {
+        labels: _.map(counts, function(arr){return arr[0]}),
+        series: [
+            _.map(counts, function(arr){return arr[1]})
+        ]
+  }
+  new Chartist.Bar('#q3 .answer', data);
 }
 
 function solution4(){
+  var counts = _.chain(items)
+                .groupBy('CrsPBADept')
+                .mapValues(function(g){
+                  return g.length
+                }).pairs()
+                .sortBy(function(arr) { return -arr[1]; })
+                .take(10)
+                .value();
+
+  var data = {
+        labels: _.map(counts, function(arr){return arr[0]}),
+        series: [
+            _.map(counts, function(arr){return arr[1]})
+        ]
+  }
+  new Chartist.Bar('#q4 .answer', data);
 }
 
 function solution5(){
-    // TODO: replace the hard coded values in series by actual computation
+    var counts = _.chain(items)
+                    .filter(function(obj) {
+                        return ((obj['CrsPBADept'] == 'HIST') ||
+                                (obj['CrsPBADept'] == 'CSCI'))
+                    }).groupBy(function(obj) {
+                        return obj['CrsLvlNum'];
+                    }).mapValues(function(arr) {
+                        return _.chain(arr)
+                            .groupBy(function(obj) {
+                                return obj['CrsPBADept']
+                            }).mapValues(function(arr) {
+                                return arr.length
+                            }).pairs().value()
+                    }).pairs()
+                    .sortBy(function(arr) {
+                        return arr[0];
+                    }).value();
+    console.log(counts)
     var data = {
-          labels: ['1xxx', '2xxx', '3xxx', '4xxx'],
+            labels: _.map(counts, function(arr) { return arr[0]; }),
           series: [
-            [20,30,40,50],  // CSCI
-            [30,30,30,30]   // HIST
+              _.map(counts, function(arr) { return arr[1][0][1]; }),
+              _.map(counts, function(arr) { return arr[1][1][1]; })
           ]
     }
     new Chartist.Bar('#q5 .answer', data);
