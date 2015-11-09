@@ -121,16 +121,16 @@ function analyze(events){
 
   ask(how_many_individuals_analyzed_so_far, events)
   ask(whose_data_is_available, events)
-  ask(who_has_the_most_emails, events)
-  ask(who_has_the_least_emails, events)
-  ask(who_connected_their_twitter_info, events)
-  ask(question4, events)
-  ask(question5, events)
-  ask(question6, events)
-  ask(question7, events)
-  ask(question8, events)
-  ask(question9, events)
-  ask(question10, events)
+  ask(most_feeds_for_a_user, events)
+  ask(least_feeds_for_a_user, events)
+  ask(how_many_connected_their_twitter_info, events)
+  ask(how_many_gmail_feeds, events)
+  ask(what_was_the_highest_event_count, events)
+  ask(what_was_the_lowest_event_count, events)
+  ask(how_many_feeds, events)
+  ask(what_apps_were_used, events)
+  ask(how_many_github_feeds, events)
+  ask(who_used_github, events)
 }
 
 function how_many_individuals_analyzed_so_far(events){
@@ -178,44 +178,131 @@ function whose_data_is_available(events){
   return _.keys(events).join(', ')
 }
 
-function who_has_the_most_emails(events){
-  return '...'
+function most_feeds_for_a_user(events){
+  var userEvents = _.values(events)
+  var feedSize = _.mapValues(userEvents, function(d) {
+    return _.size(d)
+  })
+  return _.max(_.values(feedSize))
 }
 
-function who_has_the_least_emails(events){
-  return '...'
+function least_feeds_for_a_user(events){
+  var userEvents = _.values(events)
+  var feedSize = _.mapValues(userEvents, function(d) {
+    return _.size(d)
+  })
+  return _.min(_.values(feedSize))
 }
 
-function who_connected_their_twitter_info(events){
-  return '...'
+function how_many_connected_their_twitter_info(events){
+  var userEvents = _.values(events)
+  var userFeeds = _.flatten(_.map(userEvents, function(d) {
+    return _.keys(d)
+  }))
+  filteredFeeds = _.filter(userFeeds, function(d) {
+    return !(_.startsWith(d, '-K2'))
+  })
+
+  var groups = _.groupBy(filteredFeeds)
+  var lengths = _.mapValues(groups, function(d) {
+    return d.length
+  })
+  var pairs = _.pairs(lengths)
+  var filtered_pairs = _.filter(pairs, function(d) {
+    return d[0] == 'twitter' 
+  })
+  return filtered_pairs.join(', ')
 }
 
-function question4(events){
-  return '...'
+function how_many_gmail_feeds(events){
+  var userEvents = _.values(events)
+  var userFeeds = _.flatten(_.map(userEvents, function(d) {
+    return _.keys(d)
+  }))
+  filteredFeeds = _.filter(userFeeds, function(d) {
+    return !(_.startsWith(d, '-K2'))
+  })
+
+  var groups = _.groupBy(filteredFeeds)
+  var lengths = _.mapValues(groups, function(d) {
+    return d.length
+  })
+  var pairs = _.pairs(lengths)
+  var filtered_pairs = _.filter(pairs, function(d) {
+    return d[0] == 'gmail' 
+  })
+  return filtered_pairs.join(', ')
 }
 
-function question5(events){
-  return '...'
+function what_was_the_highest_event_count(events){
+  var userEvents = _.values(events)
+  var feedSize = _.mapValues(userEvents, function(d) {
+    return _.size(d)
+  })
+  return _.max(_.values(feedSize))
 }
 
-function question6(events){
-  return '...'
+function what_was_the_lowest_event_count(events){
+  var userEvents = _.values(events)
+  var feedSize = _.mapValues(userEvents, function(d) {
+    return _.size(d)
+  })
+  return _.min(_.values(feedSize))
 }
 
-function question7(events){
-  return '...'
+function how_many_feeds(events){
+  var userEvents = _.values(events)
+  var userFeeds = _.map(userEvents, function(d) {
+    return _.keys(d)
+  })
+  var uniqueFeeds = _.unique(_.flatten(userFeeds))
+  var filteredFeeds = _.filter(uniqueFeeds, function(d) {
+    return !(_.startsWith(d, '-K2'))
+  })
+  return filteredFeeds.length
 }
 
-function question8(events){
-  return '...'
+function what_apps_were_used(events){
+  var apps = []
+    _.forEach(events, function(d){
+        apps.push(_.keys(d))
+    })
+    apps = _.flatten(apps)
+    apps = _.filter(apps, function(d){
+      return !(_.includes(d, '-K'))
+    })
+    return _.uniq(apps).join(', ')
 }
 
-function question9(events){
-  return '...'
+function how_many_github_feeds(events){
+  var userEvents = _.values(events)
+  var userFeeds = _.flatten(_.map(userEvents, function(d) {
+    return _.keys(d)
+  }))
+  filteredFeeds = _.filter(userFeeds, function(d) {
+    return !(_.startsWith(d, '-K2'))
+  })
+
+  var groups = _.groupBy(filteredFeeds)
+  var lengths = _.mapValues(groups, function(d) {
+    return d.length
+  })
+  var pairs = _.pairs(lengths)
+  var filtered_pairs = _.filter(pairs, function(d) {
+    return d[0] == 'github' 
+  })
+  return filtered_pairs.join(', ')
 }
 
-function question10(events){
-  return '...'
+function who_used_github(events){
+  var pairs =_.pairs(events)
+  var people = []
+  _.forEach(pairs, function(d){
+    if (_.includes(_.keys(d[1]), 'github')){
+      people.push(d[0])
+    }
+  })
+  return people.join(', ')
 }
 
 
