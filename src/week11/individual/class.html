@@ -38,7 +38,7 @@
     <div class="parallax">
       <img src="cloud.jpg">
       <h1 id="title">What is everyone in the class's activity?
-        <div class="authors">by Name</div>
+        <div class="authors">by Andrew Krodinger</div>
       </h1>
     </div>
   </div>
@@ -121,16 +121,16 @@ function analyze(events){
 
   ask(how_many_individuals_analyzed_so_far, events)
   ask(whose_data_is_available, events)
-  ask(question1, events)
-  ask(question2, events)
-  ask(question3, events)
-  ask(question4, events)
-  ask(question5, events)
-  ask(question6, events)
-  ask(question7, events)
-  ask(question8, events)
-  ask(question9, events)
-  ask(question10, events)
+  ask(most_feeds_for_a_user, events)
+  ask(least_feeds_for_a_user, events)
+  ask(how_many_connected_their_twitter_info, events)
+  ask(how_many_gmail_feeds, events)
+  ask(what_was_the_highest_event_count, events)
+  ask(what_was_the_lowest_event_count, events)
+  ask(how_many_feeds, events)
+  ask(what_apps_were_used, events)
+  ask(how_many_github_feeds, events)
+  ask(who_used_github, events)
 }
 
 function how_many_individuals_analyzed_so_far(events){
@@ -138,47 +138,171 @@ function how_many_individuals_analyzed_so_far(events){
 }
 
 function whose_data_is_available(events){
-  return _.keys(events).join(' , ')
+  var id_keys = _.keys(events)
+  console.log('================================')
+  console.log('id_keys', id_keys)
+
+  var id_values = _.values(events)
+  console.log('id_values', id_values)
+
+  var filtered_objects = _.filter(id_values, function(d) {
+    return _.isObject(d)
+  })
+  console.log('filtered_objects', filtered_objects)
+  console.log('--------------------------------')
+
+  var feeds = _.map(filtered_objects, function(d) {
+    // _.keys(d) are the names of the feeds (gmail, twitter, MeetUp, etc.)
+    console.log('map(d) _.keys(d)', _.keys(d))
+    console.log('map(d) _.values(d)', _.values(d))
+    var feeds2 = _.map(d, function(f) {
+      console.log('map(f) _.keys(f)', _.keys(f))
+      console.log('map(f) _.values(f)', _.values(f))
+      console.log('map(f) _.values(f).length', _.values(f).length)
+    })
+    console.log('--------------------------------')
+  })
+
+  // var online_values = _.values(id_values)
+  // console.log('online_values', online_values)
+  // var pairs = _.pairs(filtered_values)
+  // console.log('pairs', pairs)
+  // var array = _.values(events.gmail)
+  // var email_count = _.values(events.gmail).length
+  // console.log('events.gmail', events.gmail)
+  // console.log('email_count', email_count)
+  // console.log('_.values(events.gmail)', _.values(events.gmail))
+  // console.log('array', array)
+  // console.log('array[0]', array[0])
+
+  return _.keys(events).join(', ')
 }
 
-function question1(events){
-  return '...'
+function most_feeds_for_a_user(events){
+  var userEvents = _.values(events)
+  var feedSize = _.mapValues(userEvents, function(d) {
+    return _.size(d)
+  })
+  return _.max(_.values(feedSize))
 }
 
-function question2(events){
-  return '...'
+function least_feeds_for_a_user(events){
+  var userEvents = _.values(events)
+  var feedSize = _.mapValues(userEvents, function(d) {
+    return _.size(d)
+  })
+  return _.min(_.values(feedSize))
 }
 
-function question3(events){
-  return '...'
+function how_many_connected_their_twitter_info(events){
+  var userEvents = _.values(events)
+  var userFeeds = _.flatten(_.map(userEvents, function(d) {
+    return _.keys(d)
+  }))
+  filteredFeeds = _.filter(userFeeds, function(d) {
+    return !(_.startsWith(d, '-K2'))
+  })
+
+  var groups = _.groupBy(filteredFeeds)
+  var lengths = _.mapValues(groups, function(d) {
+    return d.length
+  })
+  var pairs = _.pairs(lengths)
+  var filtered_pairs = _.filter(pairs, function(d) {
+    return d[0] == 'twitter' 
+  })
+  return filtered_pairs.join(', ')
 }
 
-function question4(events){
-  return '...'
+function how_many_gmail_feeds(events){
+  var userEvents = _.values(events)
+  var userFeeds = _.flatten(_.map(userEvents, function(d) {
+    return _.keys(d)
+  }))
+  filteredFeeds = _.filter(userFeeds, function(d) {
+    return !(_.startsWith(d, '-K2'))
+  })
+
+  var groups = _.groupBy(filteredFeeds)
+  var lengths = _.mapValues(groups, function(d) {
+    return d.length
+  })
+  var pairs = _.pairs(lengths)
+  var filtered_pairs = _.filter(pairs, function(d) {
+    return d[0] == 'gmail' 
+  })
+  return filtered_pairs.join(', ')
 }
 
-function question5(events){
-  return '...'
+function what_was_the_highest_event_count(events){
+  var userEvents = _.values(events)
+  var feedSize = _.mapValues(userEvents, function(d) {
+    return _.size(d)
+  })
+  return _.max(_.values(feedSize))
 }
 
-function question6(events){
-  return '...'
+function what_was_the_lowest_event_count(events){
+  var userEvents = _.values(events)
+  var feedSize = _.mapValues(userEvents, function(d) {
+    return _.size(d)
+  })
+  return _.min(_.values(feedSize))
 }
 
-function question7(events){
-  return '...'
+function how_many_feeds(events){
+  var userEvents = _.values(events)
+  var userFeeds = _.map(userEvents, function(d) {
+    return _.keys(d)
+  })
+  var uniqueFeeds = _.unique(_.flatten(userFeeds))
+  var filteredFeeds = _.filter(uniqueFeeds, function(d) {
+    return !(_.startsWith(d, '-K2'))
+  })
+  return filteredFeeds.length
 }
 
-function question8(events){
-  return '...'
+function what_apps_were_used(events){
+  var apps = []
+    _.forEach(events, function(d){
+        apps.push(_.keys(d))
+    })
+    apps = _.flatten(apps)
+    apps = _.filter(apps, function(d){
+      return !(_.includes(d, '-K'))
+    })
+    return _.uniq(apps).join(', ')
 }
 
-function question9(events){
-  return '...'
+function how_many_github_feeds(events){
+  var userEvents = _.values(events)
+  var userFeeds = _.flatten(_.map(userEvents, function(d) {
+    return _.keys(d)
+  }))
+  filteredFeeds = _.filter(userFeeds, function(d) {
+    return !(_.startsWith(d, '-K2'))
+  })
+
+  var groups = _.groupBy(filteredFeeds)
+  var lengths = _.mapValues(groups, function(d) {
+    return d.length
+  })
+  var pairs = _.pairs(lengths)
+  var filtered_pairs = _.filter(pairs, function(d) {
+    return d[0] == 'github' 
+  })
+  return filtered_pairs.join(', ')
 }
 
-function question10(events){
-  return '...'
+function who_used_github(events){
+  var pairs =_.pairs(events)
+  var people = []
+  _.forEach(pairs, function(d){
+    if (_.includes(_.keys(d[1]), 'github')){
+      people.push(d[0])
+    }
+  })
+  return people.join(', ')
 }
 
 

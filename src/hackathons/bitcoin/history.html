@@ -41,7 +41,7 @@
     <div class="parallax">
       <img src="bitcoin.jpg">
       <h1 id="title">Should we buy or sell Bitcoins (History)?
-        <div class="authors">by Name1, Name2, Name3, Name4, </div>
+        <div class="authors">by Andrew Krodinger, Will Farmer, Andrew Linenfelser </div>
       </h1>
     </div>
   </div>
@@ -68,7 +68,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.5/marked.min.js"></script>
 
 
-  <script src="bot.js"></script>
+  <script src="hitory_bot.js"></script>
 
   <script>
 
@@ -93,7 +93,7 @@ $.ajax({url: 'https://big-data-hci-hackathon.firebaseapp.com/history.json'})
       price = item.price
       $('#tweet').html(item.tweet)
       $('#price').html(item.price)
-      process(tweet)
+      process(item)
     }, 2)
 
  })
